@@ -342,6 +342,13 @@ mqttx sub -t 'device/$SERIAL_NUMBER/report' -u bblp -P $LAN_ACCESS_CODE --mqtt-v
 		</tr>
 		<tr>
             <td align="center">
+                <a href="https://github.com/nick-sunn3dcom">
+                    <img src="https://avatars.githubusercontent.com/u/151982405?v=4" width="100;" alt="nick-sunn3dcom"/>
+                    <br />
+                    <sub><b>Sunnyday Technologies</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/thijstriemstra">
                     <img src="https://avatars.githubusercontent.com/u/305679?v=4" width="100;" alt="thijstriemstra"/>
                     <br />

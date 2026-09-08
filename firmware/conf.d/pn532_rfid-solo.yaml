@@ -1,4 +1,9 @@
 ---
+globals:
+- id: bambu_mqtt_payload
+  type: std::string
+  restore_value: false
+  initial_value: '""'
 substitutions:
   spi_data_rate: 200kHz
   # spi_data_rate: 1Mhz #TODO: decrease this to increase reliability for long cable runs
@@ -44,21 +49,20 @@ pn532_spi:
         id: nfc_tag_present0
         state: ON
     - lambda: |-
-        auto tag_result = rfid::read_openspool_tag(tag);
-        if (!tag_result.payload.empty()) {
-          id(filament_raw_data0).publish_state(tag_result.payload);
+        id(bambu_mqtt_payload) = "";
+        auto tag_result = rfid::process_tag(tag, 255, 254);
+        if (!tag_result.display_payload.empty()) {
+          id(filament_raw_data0).publish_state(tag_result.display_payload);
         }
+        id(bambu_mqtt_payload) = tag_result.mqtt_payload;
 
         // Update states
         id(rfid_reader_spi_0_tag_parsed).publish_state(true);
-        id(rfid_reader_spi_0_tag_is_openspool).publish_state(tag_result.is_valid_openspool);
+        id(rfid_reader_spi_0_tag_is_openspool).publish_state(tag_result.is_valid);
 
         // Set LED color
-        if (tag_result.is_valid_openspool) {
+        if (tag_result.is_valid) {
           id(set_led_green).execute(0);
-          //TODO: Generate and send MQTT message here
-          if (!tag_result.payload.empty()) {
-          }
         } else {
           id(set_led_red).execute(0);
         }
@@ -66,8 +70,7 @@ pn532_spi:
         condition:
           and:
           - mqtt.connected
-          - lambda: 'return id(filament_raw_data0).state != "";'
-          - lambda: 'return id(filament_raw_data0).state != "{}";'
+          - lambda: "return !id(bambu_mqtt_payload).empty();"
           - binary_sensor.is_on: rfid_reader_spi_0_tag_is_openspool
           - binary_sensor.is_on: rfid_reader_spi_0_tag_parsed
         then:
@@ -75,7 +78,7 @@ pn532_spi:
             topic: !lambda 'return "device/" + id(bambu_serial_number).state + "/request";'
             # 255 = external ams, TODO: A1,P1,X1 might use different values for AMS
             # 254 = external tray, first filament slot is tray 0
-            payload: !lambda "return bambulabs::generate_mqtt_payload( id(filament_raw_data0).state, 255, 254 );"
+            payload: !lambda "return id(bambu_mqtt_payload);"
 text_sensor:
 - platform: template
   name: "NFC Raw Data"

@@ -44,56 +44,20 @@ pn532_spi:
         id: nfc_tag_present0
         state: ON
     - lambda: |-
-        bool is_valid_openspool = false;
-        std::string payload;
-
-        if (tag.has_ndef_message()) {
-          auto records = tag.get_ndef_message()->get_records();
-          bool found_json = false;
-
-          // Look for application/json record
-          for (const auto& record : records) {
-            if (record->get_type() == "application/json") {
-              if (found_json) {
-                // More than one JSON record found
-                ESP_LOGW("NFC", "Multiple JSON records found, using first one");
-                break;
-              }
-
-              payload = record->get_payload();
-              ESP_LOGD("NFC", "Payload: %s", payload.c_str());
-              id(filament_raw_data0).publish_state(payload);
-
-              // Parse JSON and check for OpenSpool protocol
-              auto parse_result = json::parse_json(payload, [&](JsonObject root) {
-                is_valid_openspool = root["protocol"] == "openspool";
-                return true;
-              });
-
-              if (!parse_result) {
-                ESP_LOGE("NFC", "Failed to parse JSON payload");
-              }
-
-              found_json = true;
-            }
-          }
-
-          if (!found_json) {
-            ESP_LOGW("NFC", "No application/json record found");
-          }
-        } else {
-          ESP_LOGI("NFC", "Tag found without NDEF message");
+        auto tag_result = rfid::read_openspool_tag(tag);
+        if (!tag_result.payload.empty()) {
+          id(filament_raw_data0).publish_state(tag_result.payload);
         }
 
         // Update states
         id(rfid_reader_spi_0_tag_parsed).publish_state(true);
-        id(rfid_reader_spi_0_tag_is_openspool).publish_state(is_valid_openspool);
+        id(rfid_reader_spi_0_tag_is_openspool).publish_state(tag_result.is_valid_openspool);
 
         // Set LED color
-        if (is_valid_openspool) {
+        if (tag_result.is_valid_openspool) {
           id(set_led_green).execute(0);
           //TODO: Generate and send MQTT message here
-          if (!payload.empty()) {
+          if (!tag_result.payload.empty()) {
           }
         } else {
           id(set_led_red).execute(0);

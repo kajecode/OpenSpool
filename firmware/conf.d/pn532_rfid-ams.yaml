@@ -20,41 +20,20 @@ pn532_spi:
         id: nfc_tag_present1
         state: ON
     - lambda: |-
-        bool is_valid_openspool = false;
-        std::string payload;
-
-        if (tag.has_ndef_message()) {
-          auto records = tag.get_ndef_message()->get_records();
-          if (records.size() == 1 && records[0]->get_type() == "application/json") {
-            payload = records[0]->get_payload();
-            ESP_LOGD("NFC", "Payload: %s", payload.c_str());
-            id(filament_raw_data1).publish_state(payload);
-
-            // Parse JSON and check for OpenSpool protocol
-            auto parse_result = json::parse_json(payload, [&](JsonObject root) {
-              is_valid_openspool = root["protocol"] == "openspool";
-              return true;
-            });
-
-            if (!parse_result) {
-              ESP_LOGE("NFC", "Failed to parse JSON payload");
-            }
-          } else {
-            ESP_LOGE("NFC", "Invalid NDEF message structure");
-          }
-        } else {
-          ESP_LOGI("NFC", "Tag found without NDEF message");
+        auto tag_result = rfid::read_openspool_tag(tag);
+        if (!tag_result.payload.empty()) {
+          id(filament_raw_data1).publish_state(tag_result.payload);
         }
 
         // Update states
         id(rfid_reader_spi_1_tag_parsed).publish_state(true);
-        id(rfid_reader_spi_1_tag_is_openspool).publish_state(is_valid_openspool);
+        id(rfid_reader_spi_1_tag_is_openspool).publish_state(tag_result.is_valid_openspool);
 
         // Set LED color
-        if (is_valid_openspool) {
+        if (tag_result.is_valid_openspool) {
           id(set_led_green).execute(1);
           //TODO: Generate and send MQTT message here
-          if (!payload.empty()) {
+          if (!tag_result.payload.empty()) {
               //TODO: should this publish mqtt payload here? 
           }
         } else {
@@ -96,56 +75,20 @@ pn532_spi:
         id: nfc_tag_present2
         state: ON
     - lambda: |-
-        bool is_valid_openspool = false;
-         std::string payload;
-
-        if (tag.has_ndef_message()) {
-          auto records = tag.get_ndef_message()->get_records();
-          bool found_json = false;
-          
-          // Look for application/json record
-          for (const auto& record : records) {
-            if (record->get_type() == "application/json") {
-              if (found_json) {
-                // More than one JSON record found
-                ESP_LOGW("NFC", "Multiple JSON records found, using first one");
-                break;
-              }
-              
-              payload = record->get_payload();
-              ESP_LOGD("NFC", "Payload: %s", payload.c_str());
-              id(filament_raw_data0).publish_state(payload);
-
-              // Parse JSON and check for OpenSpool protocol
-              auto parse_result = json::parse_json(payload, [&](JsonObject root) {
-                is_valid_openspool = root["protocol"] == "openspool";
-                return true;
-              });
-
-              if (!parse_result) {
-                ESP_LOGE("NFC", "Failed to parse JSON payload");
-              }
-              
-              found_json = true;
-            }
-          }
-
-          if (!found_json) {
-            ESP_LOGW("NFC", "No application/json record found");
-          }
-        } else {
-          ESP_LOGI("NFC", "Tag found without NDEF message");
+        auto tag_result = rfid::read_openspool_tag(tag);
+        if (!tag_result.payload.empty()) {
+          id(filament_raw_data2).publish_state(tag_result.payload);
         }
 
          // Update states
          id(rfid_reader_spi_2_tag_parsed).publish_state(true);
-         id(rfid_reader_spi_2_tag_is_openspool).publish_state(is_valid_openspool);
+         id(rfid_reader_spi_2_tag_is_openspool).publish_state(tag_result.is_valid_openspool);
 
          // Set LED color
-         if (is_valid_openspool) {
+         if (tag_result.is_valid_openspool) {
            id(set_led_green).execute(2);
            //TODO: Generate and send MQTT message here
-           if (!payload.empty()) {
+           if (!tag_result.payload.empty()) {
               //TODO: should this publish mqtt payload here? 
            }
          } else {

@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "esphome/components/nfc/nfc_tag.h"
+
 namespace bambulabs
 {
     const std::unordered_map<std::string, std::string> filament_mappings = {
@@ -162,4 +164,60 @@ namespace bambulabs
         return result;
     }
 
+}
+
+namespace rfid
+{
+    struct TagResult
+    {
+        bool is_valid_openspool{false};
+        std::string payload;
+    };
+
+    inline TagResult read_openspool_tag(esphome::nfc::NfcTag &tag)
+    {
+        TagResult result;
+
+        if (!tag.has_ndef_message())
+        {
+            ESP_LOGI("NFC", "Tag found without NDEF message");
+            return result;
+        }
+
+        const auto &records = tag.get_ndef_message()->get_records();
+        bool found_json = false;
+        for (const auto &record : records)
+        {
+            if (record->get_type() != "application/json")
+            {
+                continue;
+            }
+
+            if (found_json)
+            {
+                ESP_LOGW("NFC", "Multiple JSON records found, using first one");
+                break;
+            }
+
+            result.payload = record->get_payload();
+            ESP_LOGD("NFC", "Payload: %s", result.payload.c_str());
+
+            auto parse_result = json::parse_json(result.payload, [&](JsonObject root) {
+                result.is_valid_openspool = root["protocol"] == "openspool";
+                return true;
+            });
+            if (!parse_result)
+            {
+                ESP_LOGE("NFC", "Failed to parse JSON payload");
+            }
+
+            found_json = true;
+        }
+
+        if (!found_json)
+        {
+            ESP_LOGW("NFC", "No application/json record found");
+        }
+        return result;
+    }
 }

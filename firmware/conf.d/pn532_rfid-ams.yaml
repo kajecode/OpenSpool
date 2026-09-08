@@ -119,43 +119,7 @@ text_sensor:
     sorting_group_id: sorting_group_rfid
   filters:
   - lambda: |-
-      auto pretty_json = [](const std::string &x) -> std::string {
-        if (x.empty()) {
-          ESP_LOGD("NFC", "Input string is empty");
-          return x;
-        }     
-        ESP_LOGD("NFC", "Input string: %s", x.c_str());
-        JsonDocument doc;
-        DeserializationError error = deserializeJson(doc, x);
-        if (error) {
-          ESP_LOGE("NFC", "JSON parsing failed: %s", error.c_str());
-          return "";
-        }
-        
-        if (!doc.is<JsonObject>()) {
-          ESP_LOGE("NFC", "Invalid JSON: Not an object");
-          return "";
-        }
-        
-        const char* required_fields[] = {"protocol", "color_hex", "type", "min_temp", "max_temp", "brand"};
-        for (const char* field : required_fields) {
-          if (!doc[field].is<const char*>() && !doc[field].is<int>() && !doc[field].is<float>()) {
-            ESP_LOGE("NFC", "Invalid JSON: Missing required field '%s'", field);
-            return "";
-          }
-        }
-        
-        std::string output;
-        serializeJsonPretty(doc, output);
-        
-        if (output.length() > 1024) {
-          ESP_LOGE("NFC", "Prettified JSON exceeds 1024 bytes");
-          return "";
-        }
-        
-        return output;
-      };
-      return pretty_json(x);
+      return openspool::format_display(x);
 # NFC Raw Data 1-8 are hidden unless ams.yaml is included
 - platform: template
   name: "NFC Raw Data 2"
@@ -167,43 +131,7 @@ text_sensor:
     sorting_group_id: sorting_group_rfid
   filters:
   - lambda: |-
-      auto pretty_json = [](const std::string &x) -> std::string {
-        if (x.empty()) {
-          ESP_LOGD("NFC", "Input string is empty");
-          return x;
-        }     
-        ESP_LOGD("NFC", "Input string: %s", x.c_str());
-        JsonDocument doc;
-        DeserializationError error = deserializeJson(doc, x);
-        if (error) {
-          ESP_LOGE("NFC", "JSON parsing failed: %s", error.c_str());
-          return "";
-        }
-        
-        if (!doc.is<JsonObject>()) {
-          ESP_LOGE("NFC", "Invalid JSON: Not an object");
-          return "";
-        }
-        
-        const char* required_fields[] = {"protocol", "color_hex", "type", "min_temp", "max_temp", "brand"};
-        for (const char* field : required_fields) {
-          if (!doc[field].is<const char*>() && !doc[field].is<int>() && !doc[field].is<float>()) {
-            ESP_LOGE("NFC", "Invalid JSON: Missing required field '%s'", field);
-            return "";
-          }
-        }
-        
-        std::string output;
-        serializeJsonPretty(doc, output);
-        
-        if (output.length() > 1024) {
-          ESP_LOGE("NFC", "Prettified JSON exceeds 1024 bytes");
-          return "";
-        }
-        
-        return output;
-      };
-      return pretty_json(x);
+      return openspool::format_display(x);
 
 binary_sensor:
 - platform: template

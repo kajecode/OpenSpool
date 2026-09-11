@@ -513,7 +513,7 @@ namespace rfid
         {
             const auto &record_payload = records[opentag3d_index]->get_payload();
             result.display_payload = opentag3d::to_hex_string(record_payload);
-            ESP_LOGD("NFC", "Payload: %s", result.diplay_payload.c_str());
+            ESP_LOGD("NFC", "Payload: %s", result.display_payload.c_str());
 
             opentag3d::Tag opentag3d_tag;
             if (opentag3d::decode(record_payload, opentag3d_tag))

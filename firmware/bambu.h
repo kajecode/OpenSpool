@@ -131,7 +131,7 @@ namespace opentag3d
 
         if (!ok)
         {
-            ESP_LOGW("opentag3d", "OpenTag3D payload is missing one or more required fields");
+            ESP_LOGW("opentag3d", "OpenTag3D payload is corrupt or missing one or more required fields");
         }
         return ok;
     }

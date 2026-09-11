@@ -512,11 +512,13 @@ namespace rfid
         if (opentag3d_index >= 0)
         {
             const auto &record_payload = records[opentag3d_index]->get_payload();
+            result.display_payload = opentag3d::to_hex_string(record_payload);
+            ESP_LOGD("NFC", "Payload: %s", result.diplay_payload.c_str());
+
             opentag3d::Tag opentag3d_tag;
             if (opentag3d::decode(record_payload, opentag3d_tag))
             {
                 result.is_valid = true;
-                result.display_payload = opentag3d::to_hex_string(record_payload);
                 result.mqtt_payload = bambulabs::generate_mqtt_payload(opentag3d_tag, ams_id, ams_tray);
                 ESP_LOGI("NFC", "Decoded OpenTag3D tag: %s from %s",
                          opentag3d::format_type(opentag3d_tag).c_str(), opentag3d_tag.manufacturer.c_str());

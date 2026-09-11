@@ -105,8 +105,7 @@ namespace opentag3d
         tag.density = read_u16(payload, 0x9C) / 1000.0f;
         tag.target_weight = read_u16(payload, 0x9E);
 
-        return !tag.material.empty() && !tag.manufacturer.empty() && tag.diameter > 0 && tag.print_temp != 0 &&
-               tag.chamber_temp != 0 && tag.bed_temp != 0 && tag.density > 0 && tag.target_weight != 0;
+        return !tag.material.empty() && !tag.manufacturer.empty() && tag.diameter > 0 && tag.print_temp != 0 && tag.bed_temp != 0 && tag.density > 0 && tag.target_weight != 0;
     }
 
     // Parses an `application/opentag3d` NDEF payload into its native fields.

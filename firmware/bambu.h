@@ -27,16 +27,16 @@ namespace opentag3d
         std::string modifier;
         std::string manufacturer;
         Color color;
-        float diameter_mm{0};
-        float density_g_cm3{0};
-        uint16_t target_weight_g{0};
-        uint16_t print_temp_c{0};
-        uint16_t min_print_temp_c{0};
-        uint16_t max_print_temp_c{0};
-        uint16_t chamber_temp_c{0};
-        uint16_t bed_temp_c{0};
-        uint16_t min_bed_temp_c{0};
-        uint16_t max_bed_temp_c{0};
+        float diameter{0};
+        float density{0};
+        uint16_t target_weight{0};
+        uint16_t print_temp{0};
+        uint16_t min_print_temp{0};
+        uint16_t max_print_temp{0};
+        uint16_t chamber_temp{0};
+        uint16_t bed_temp{0};
+        uint16_t min_bed_temp{0};
+        uint16_t max_bed_temp{0};
     };
 
     // Bytes beyond the end of the payload are treated as 0x00, per the reader implementation guidelines.
@@ -73,18 +73,18 @@ namespace opentag3d
         tag.modifier = read_string(payload, 0x07, 5);
         tag.manufacturer = read_string(payload, 0x1B, 16);
         tag.color = read_color(payload, 0x4B);
-        tag.diameter_mm = read_u16(payload, 0x5C) / 1000.0f;
-        tag.target_weight_g = read_u16(payload, 0x5E);
-        tag.print_temp_c = read_u8(payload, 0x60) * 5;
-        tag.bed_temp_c = read_u8(payload, 0x61) * 5;
-        tag.density_g_cm3 = read_u16(payload, 0x62) / 1000.0f;
-        tag.min_print_temp_c = read_u8(payload, 0xB4) * 5;
-        tag.max_print_temp_c = read_u8(payload, 0xB5) * 5;
-        tag.min_bed_temp_c = read_u8(payload, 0xB6) * 5;
-        tag.max_bed_temp_c = read_u8(payload, 0xB7) * 5;
+        tag.diameter = read_u16(payload, 0x5C) / 1000.0f;
+        tag.target_weight = read_u16(payload, 0x5E);
+        tag.print_temp = read_u8(payload, 0x60) * 5;
+        tag.bed_temp = read_u8(payload, 0x61) * 5;
+        tag.density = read_u16(payload, 0x62) / 1000.0f;
+        tag.min_print_temp = read_u8(payload, 0xB4) * 5;
+        tag.max_print_temp = read_u8(payload, 0xB5) * 5;
+        tag.min_bed_temp = read_u8(payload, 0xB6) * 5;
+        tag.max_bed_temp = read_u8(payload, 0xB7) * 5;
 
-        return !tag.material.empty() && !tag.manufacturer.empty() && tag.diameter_mm > 0 && tag.print_temp_c != 0 &&
-               tag.bed_temp_c != 0 && tag.density_g_cm3 > 0 && tag.target_weight_g != 0;
+        return !tag.material.empty() && !tag.manufacturer.empty() && tag.diameter > 0 && tag.print_temp != 0 &&
+               tag.bed_temp != 0 && tag.density > 0 && tag.target_weight != 0;
     }
 
     // Decodes the v2 core memory map: https://opentag3d.info/spec
@@ -94,19 +94,19 @@ namespace opentag3d
         tag.modifier = read_string(payload, 0x07, 5);
         tag.manufacturer = read_string(payload, 0x0C, 16);
         tag.color = read_color(payload, 0x3C);
-        tag.diameter_mm = read_u16(payload, 0x8C) / 1000.0f;
-        tag.print_temp_c = read_u8(payload, 0x90) * 5;
-        tag.min_print_temp_c = read_u8(payload, 0x91) * 5;
-        tag.max_print_temp_c = read_u8(payload, 0x92) * 5;
-        tag.chamber_temp_c = read_u8(payload, 0x93) * 5;
-        tag.bed_temp_c = read_u8(payload, 0x94) * 5;
-        tag.min_bed_temp_c = read_u8(payload, 0x95) * 5;
-        tag.max_bed_temp_c = read_u8(payload, 0x96) * 5;
-        tag.density_g_cm3 = read_u16(payload, 0x9C) / 1000.0f;
-        tag.target_weight_g = read_u16(payload, 0x9E);
+        tag.diameter = read_u16(payload, 0x8C) / 1000.0f;
+        tag.print_temp = read_u8(payload, 0x90) * 5;
+        tag.min_print_temp = read_u8(payload, 0x91) * 5;
+        tag.max_print_temp = read_u8(payload, 0x92) * 5;
+        tag.chamber_temp = read_u8(payload, 0x93) * 5;
+        tag.bed_temp = read_u8(payload, 0x94) * 5;
+        tag.min_bed_temp = read_u8(payload, 0x95) * 5;
+        tag.max_bed_temp = read_u8(payload, 0x96) * 5;
+        tag.density = read_u16(payload, 0x9C) / 1000.0f;
+        tag.target_weight = read_u16(payload, 0x9E);
 
-        return !tag.material.empty() && !tag.manufacturer.empty() && tag.diameter_mm > 0 && tag.print_temp_c != 0 &&
-               tag.chamber_temp_c != 0 && tag.bed_temp_c != 0 && tag.density_g_cm3 > 0 && tag.target_weight_g != 0;
+        return !tag.material.empty() && !tag.manufacturer.empty() && tag.diameter > 0 && tag.print_temp != 0 &&
+               tag.chamber_temp != 0 && tag.bed_temp != 0 && tag.density > 0 && tag.target_weight != 0;
     }
 
     // Parses an `application/opentag3d` NDEF payload into its native fields.
@@ -418,8 +418,8 @@ namespace bambulabs
                  tag.color.a);
         print["tray_color"] = color_hex;
 
-        print["nozzle_temp_min"] = tag.min_print_temp_c ? tag.min_print_temp_c : tag.print_temp_c;
-        print["nozzle_temp_max"] = tag.max_print_temp_c ? tag.max_print_temp_c : tag.print_temp_c;
+        print["nozzle_temp_min"] = tag.min_print_temp ? tag.min_print_temp : tag.print_temp;
+        print["nozzle_temp_max"] = tag.max_print_temp ? tag.max_print_temp : tag.print_temp;
 
         const std::string type = opentag3d::format_type(tag);
         print["tray_type"] = type;

@@ -488,6 +488,7 @@ namespace rfid
             }
         }
 
+        // Parse OpenSpool
         if (json_index >= 0)
         {
             result.display_payload = records[json_index]->get_payload();
@@ -498,9 +499,17 @@ namespace rfid
             {
                 result.is_valid = true;
                 result.mqtt_payload = bambulabs::generate_mqtt_payload(openspool_tag, ams_id, ams_tray);
+
+                return result;
+            }
+            else
+            {
+                ESP_LOGE("NFC", "Failed to decode OpenSpool payload");
             }
         }
-        else if (opentag3d_index >= 0)
+        
+        // Parse OpenTag3D
+        if (opentag3d_index >= 0)
         {
             const auto &record_payload = records[opentag3d_index]->get_payload();
             opentag3d::Tag opentag3d_tag;
@@ -511,17 +520,16 @@ namespace rfid
                 result.mqtt_payload = bambulabs::generate_mqtt_payload(opentag3d_tag, ams_id, ams_tray);
                 ESP_LOGI("NFC", "Decoded OpenTag3D tag: %s from %s",
                          opentag3d::format_type(opentag3d_tag).c_str(), opentag3d_tag.manufacturer.c_str());
+                return result;
             }
             else
             {
                 ESP_LOGE("NFC", "Failed to decode OpenTag3D payload");
             }
         }
-        else
-        {
-            ESP_LOGW("NFC", "No recognized NDEF record found");
-        }
 
+        // No tag could be parsed
+        ESP_LOGW("NFC", "No recognized NDEF record found");
         return result;
     }
 }

@@ -468,6 +468,7 @@ namespace rfid
             {
                 if (json_index < 0)
                 {
+                    ESP_LOGI("NFC", "OpenSpool record detected");
                     json_index = i;
                 }
                 else
@@ -479,6 +480,7 @@ namespace rfid
             {
                 if (opentag3d_index < 0)
                 {
+                    ESP_LOGI("NFC", "OpenTag3D record detected");
                     opentag3d_index = i;
                 }
                 else

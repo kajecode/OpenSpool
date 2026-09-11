@@ -464,13 +464,27 @@ namespace rfid
         for (size_t i = 0; i < records.size(); i++)
         {
             const auto &type = records[i]->get_type();
-            if (json_index < 0 && type == "application/json")
+            if (type == "application/json")
             {
-                json_index = i;
+                if (json_index < 0)
+                {
+                    json_index = i;
+                }
+                else
+                {
+                    ESP_LOGW("NFC", "Multiple OpenSpool records detected, using first one");
+                }
             }
-            else if (opentag3d_index < 0 && type == "application/opentag3d")
+            else if (type == "application/opentag3d")
             {
-                opentag3d_index = i;
+                if (opentag3d_index < 0)
+                {
+                    opentag3d_index = i;
+                }
+                else
+                {
+                    ESP_LOGW("NFC", "Multiple OpenTag3D records detected, using first one");
+                }
             }
         }
 

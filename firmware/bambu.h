@@ -365,6 +365,7 @@ namespace bambulabs
         return get_bambu_code(type, brand);
     }
 
+    // Builds the Bambu `ams_filament_setting` an MQTT payload from an OpenSpool tag
     inline std::string generate_mqtt_payload(const openspool::Tag &tag, uint16_t ams_id, uint16_t ams_tray)
     {
         JsonDocument doc_out;
@@ -401,8 +402,7 @@ namespace bambulabs
         return result;
     }
 
-    // Builds the Bambu `ams_filament_setting` MQTT payload directly from a decoded OpenTag3D tag,
-    // without ever bridging through the OpenSpool JSON schema.
+    // Builds the Bambu `ams_filament_setting` MQTT payload from an OpenTag3D tag
     inline std::string generate_mqtt_payload(const opentag3d::Tag &tag, uint16_t ams_id, uint16_t ams_tray)
     {
         JsonDocument doc_out;

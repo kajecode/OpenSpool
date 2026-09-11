@@ -257,7 +257,7 @@ script:
         }
       }
       else {
-        ESP_LOGE("main", "Unknown filament type: %s", id(filament_type).current_option());
+        ESP_LOGE("main", "Unknown filament type: %s", id(filament_type).current_option().c_str());
       }
 - id: generate_filament_temperatures
   then:
@@ -279,7 +279,7 @@ script:
               id(filament_min_temp).publish_state(200);
               id(filament_max_temp).publish_state(250);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for TPU: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for TPU: %s", id(filament_brand).current_option().c_str());
               id(filament_min_temp).publish_state(200);
               id(filament_max_temp).publish_state(250);
             }
@@ -289,7 +289,7 @@ script:
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for PLA: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for PLA: %s", id(filament_brand).current_option().c_str());
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             }
@@ -299,7 +299,7 @@ script:
               id(filament_min_temp).publish_state(220);
               id(filament_max_temp).publish_state(270);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for PETG: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for PETG: %s", id(filament_brand).current_option().c_str());
               id(filament_min_temp).publish_state(220);
               id(filament_max_temp).publish_state(270);
             }
@@ -308,7 +308,7 @@ script:
             if (id(filament_brand).current_option() == "Generic") {
               //TODO: find temps for ASA
             } else {
-              ESP_LOGW("main", "Unknown temperatures for ASA: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for ASA: %s", id(filament_brand).current_option().c_str());
             }
           }
           else if (id(filament_type).current_option() == "ABS") {
@@ -316,7 +316,7 @@ script:
               id(filament_min_temp).publish_state(240);
               id(filament_max_temp).publish_state(280);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for ABS: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for ABS: %s", id(filament_brand).current_option().c_str());
             }
           }
           else if (id(filament_type).current_option() == "PVA") {
@@ -324,7 +324,7 @@ script:
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for PVA: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for PVA: %s", id(filament_brand).current_option().c_str());
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             }
@@ -334,7 +334,7 @@ script:
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for PA-CF: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for PA-CF: %s", id(filament_brand).current_option().c_str());
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             }
@@ -343,7 +343,7 @@ script:
             if (id(filament_brand).current_option() == "Generic") {
               //TODO: find temps for PC
             } else {
-              ESP_LOGW("main", "Unknown temperatures for PC: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for PC: %s", id(filament_brand).current_option().c_str());
             }
           }
           else if (id(filament_type).current_option() == "PA") {
@@ -351,13 +351,13 @@ script:
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             } else {
-              ESP_LOGW("main", "Unknown temperatures for PA: %s", id(filament_brand).current_option());
+              ESP_LOGW("main", "Unknown temperatures for PA: %s", id(filament_brand).current_option().c_str());
               id(filament_min_temp).publish_state(190);
               id(filament_max_temp).publish_state(240);
             }
           }
           else {
-            ESP_LOGW("main", "Unknown filament type: %s", id(filament_type).current_option());
+            ESP_LOGW("main", "Unknown filament type: %s", id(filament_type).current_option().c_str());
           }
 
 esphome:

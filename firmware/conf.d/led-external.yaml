@@ -31,9 +31,9 @@ light:
       name: Breathing Green
       update_interval: 10ms
       lambda: |-
-        static float b = 0;
-        b = (sin(millis() / 500.0) + 1.0) / 2.0 * 0.6 + 0.4;
-        auto color = Color(0, uint8_t(255 * b), 0);
+        static float g = 0;
+        g = (sin(millis() / 500.0) + 1.0) / 2.0 * 0.6 + 0.4;
+        auto color = Color(0, uint8_t(255 * g), 0);
         it.all() = color;
   - addressable_lambda:
       name: Apple Breathing

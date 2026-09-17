@@ -1,4 +1,13 @@
 ---
+globals:
+- id: last_tag_uid
+  type: std::string
+  restore_value: false
+  initial_value: '""'
+- id: last_tag_millis
+  type: uint32_t
+  restore_value: false
+  initial_value: '0'
 substitutions:
   spi_data_rate: 200kHz
   # spi_data_rate: 1Mhz #TODO: decrease this to increase reliability for long cable runs
@@ -30,9 +39,7 @@ pn532_spi:
   update_interval: ${update_interval}
   on_tag_removed:
     then:
-    - script.execute:
-        id: set_led_white
-        led_number: 0
+    - script.execute: debounced_tag_removed
     - binary_sensor.template.publish:
         id: nfc_tag_present0
         state: OFF
@@ -40,10 +47,24 @@ pn532_spi:
         id(filament_raw_data0).publish_state("");
   on_tag:
     then:
+    - script.stop: debounced_tag_removed
     - binary_sensor.template.publish:
         id: nfc_tag_present0
         state: ON
     - lambda: |-
+        // Debounce transient NFC read glitches: the pn532 component treats any
+        // failed poll as a removal, then re-fires on_tag when the same physical
+        // tag is picked back up on the next cycle. Ignore repeats of the same
+        // UID that land within a short cooldown so the LED/MQTT flow doesn't
+        // restart mid-flash.
+        std::string current_uid(tag.get_uid().begin(), tag.get_uid().end());
+        uint32_t now = millis();
+        if (current_uid == id(last_tag_uid) && (now - id(last_tag_millis)) < 5000) {
+          return;
+        }
+        id(last_tag_uid) = current_uid;
+        id(last_tag_millis) = now;
+
         bool is_valid_openspool = false;
         std::string payload;
         std::string color_hex;
@@ -98,13 +119,13 @@ pn532_spi:
           if (!color_hex.empty()) {
             id(flash_led_color_hex).execute(color_hex);
           } else {
-            id(set_led_green).execute(0);
+            id(set_led_green).execute(-1);
           }
           //TODO: Generate and send MQTT message here
           if (!payload.empty()) {
           }
         } else {
-          id(set_led_red).execute(0);
+          id(set_led_red).execute(-1);
         }
     - if:
         condition:
@@ -320,7 +341,7 @@ button:
             format: "Finished writing tag"
             level: INFO
         - lambda: |-
-            id(set_led_green).execute(0);
+            id(set_led_green).execute(-1);
         else:
         - lambda: |-
             ESP_LOGI("rfid", "NFC Tag not present");

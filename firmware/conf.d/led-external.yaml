@@ -64,9 +64,11 @@ script:
   parameters:
     led_number: int8_t
   then:
-  - light.turn_on:
-      id: neopixel_light
-      effect: none
+  - lambda: |-
+      auto call = id(neopixel_light).turn_on();
+      call.set_effect("None");
+      call.set_transition_length(0);
+      call.perform();
   - light.addressable_set:
       id: neopixel_light
       color_brightness: 100%
@@ -79,9 +81,11 @@ script:
   parameters:
     led_number: int8_t
   then:
-  - light.turn_on:
-      id: neopixel_light
-      effect: none
+  - lambda: |-
+      auto call = id(neopixel_light).turn_on();
+      call.set_effect("None");
+      call.set_transition_length(0);
+      call.perform();
   - light.addressable_set:
       id: neopixel_light
       color_brightness: 100%
@@ -94,9 +98,11 @@ script:
   parameters:
     led_number: int8_t
   then:
-  - light.turn_on:
-      id: neopixel_light
-      effect: none
+  - lambda: |-
+      auto call = id(neopixel_light).turn_on();
+      call.set_effect("None");
+      call.set_transition_length(0);
+      call.perform();
   - light.addressable_set:
       id: neopixel_light
       color_brightness: 100%
@@ -109,9 +115,11 @@ script:
   parameters:
     led_number: int8_t
   then:
-  - light.turn_on:
-      id: neopixel_light
-      effect: none
+  - lambda: |-
+      auto call = id(neopixel_light).turn_on();
+      call.set_effect("None");
+      call.set_transition_length(0);
+      call.perform();
   - light.addressable_set:
       id: neopixel_light
       color_brightness: 100%
@@ -124,9 +132,11 @@ script:
   parameters:
     led_number: int8_t
   then:
-  - light.turn_on:
-      id: neopixel_light
-      effect: none
+  - lambda: |-
+      auto call = id(neopixel_light).turn_on();
+      call.set_effect("None");
+      call.set_transition_length(0);
+      call.perform();
   - light.addressable_set:
       id: neopixel_light
       color_brightness: 50%
@@ -199,7 +209,14 @@ script:
       call.set_effect("None");
       call.set_rgb(r / 255.0f, g / 255.0f, b / 255.0f);
       call.set_brightness(1.0f);
+      call.set_transition_length(0);
       call.perform();
+- id: debounced_tag_removed
+  then:
+  - delay: 1s
+  - script.execute:
+      id: set_led_white
+      led_number: -1
 - id: flash_led_color_hex
   parameters:
     hex_color: string
@@ -210,4 +227,4 @@ script:
   - delay: 2s
   - script.execute:
       id: set_led_white
-      led_number: 0
+      led_number: -1

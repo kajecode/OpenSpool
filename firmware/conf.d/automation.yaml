@@ -144,6 +144,9 @@ script:
         } else if (id(filament_brand).current_option() == "Sunlu") {
           id(filament_brand_code).publish_state("GFSNL03");
           id(filament_sub_brand).publish_state("Sunlu PLA");
+        } else if (id(filament_brand).current_option() == "Elegoo") {
+          id(filament_brand_code).publish_state("GFELG03");
+          id(filament_sub_brand).publish_state("Elegoo PLA");
         } else if (id(filament_brand).current_option() == "Bambu") {
           // Check for Bambu PLA variants
           if (id(filament_variant).current_option() == "Basic") {
@@ -176,6 +179,9 @@ script:
         } else if (id(filament_brand).current_option() == "Sunlu") {
           id(filament_brand_code).publish_state("GFSNL08");
           id(filament_sub_brand).publish_state("Sunlu PETG");
+        } else if (id(filament_brand).current_option() == "Elegoo") {
+          id(filament_brand_code).publish_state("GFELG08");
+          id(filament_sub_brand).publish_state("Elegoo PETG");
         } else { // Generic
           id(filament_brand_code).publish_state("GFG99");
           id(filament_sub_brand).publish_state("PETG");

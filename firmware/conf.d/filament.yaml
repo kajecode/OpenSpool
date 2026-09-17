@@ -82,6 +82,7 @@ select:
   - PolyTerra
   - PolyLite
   - Sunlu
+  - Elegoo
   on_value:
     then:
     - script.execute: generate_filament_brand_code

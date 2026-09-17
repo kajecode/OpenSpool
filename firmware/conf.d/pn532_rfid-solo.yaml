@@ -192,7 +192,7 @@ button:
           #       return true;
           #     }
           - lambda: |-
-              if (id(filament_brand).state == "") {
+              if (id(filament_brand).current_option() == "") {
                 ESP_LOGE("main", "Filament Brand cannot be empty");
                 return false;
               } else {
@@ -227,7 +227,7 @@ button:
                 return true;
               }
           - lambda: |-
-              if (id(filament_type).state == "") {
+              if (id(filament_type).current_option() == "") {
                 ESP_LOGE("main", "Filament Type cannot be empty");
                 return false;
               } else {
@@ -245,10 +245,10 @@ button:
             //url.append("protocol=").append("openspool");
             //url.append("&version=").append("1.0");
             //url.append("&color_hex=").append(id(filament_color_hex).state);
-            //url.append("&type=").append(id(filament_type).state);
+            //url.append("&type=").append(id(filament_type).current_option());
             //url.append("&min_temp=").append(std::to_string(static_cast<uint16_t>(id(filament_min_temp).state)));
             //url.append("&max_temp=").append(std::to_string(static_cast<uint16_t>(id(filament_max_temp).state)));
-            //url.append("&brand=").append(id(filament_brand).state);
+            //url.append("&brand=").append(id(filament_brand).current_option());
 
             // Warn if the url is more than 255 bytes
             // While NFC allows messages longer than 255, you have to set the tnf_byte which esphome doesn't allow yet
@@ -274,10 +274,10 @@ button:
             else{
               root["color_hex"] = id(filament_color_hex).state;
             } 
-            root["type"] = id(filament_type).state;
+            root["type"] = id(filament_type).current_option().c_str();
             root["min_temp"] = id(filament_min_temp).state;
             root["max_temp"] = id(filament_max_temp).state;
-            root["brand"] = id(filament_brand).state;
+            root["brand"] = id(filament_brand).current_option().c_str();
 
             std::string json_string;
             serializeJson(root, json_string);

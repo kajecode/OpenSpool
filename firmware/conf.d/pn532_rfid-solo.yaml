@@ -46,6 +46,7 @@ pn532_spi:
     - lambda: |-
         bool is_valid_openspool = false;
         std::string payload;
+        std::string color_hex;
 
         if (tag.has_ndef_message()) {
           auto records = tag.get_ndef_message()->get_records();
@@ -67,6 +68,9 @@ pn532_spi:
               // Parse JSON and check for OpenSpool protocol
               auto parse_result = json::parse_json(payload, [&](JsonObject root) {
                 is_valid_openspool = root["protocol"] == "openspool";
+                if (root["color_hex"].is<const char*>()) {
+                  color_hex = root["color_hex"].as<const char*>();
+                }
                 return true;
               });
 
@@ -91,7 +95,11 @@ pn532_spi:
 
         // Set LED color
         if (is_valid_openspool) {
-          id(set_led_green).execute(0);
+          if (!color_hex.empty()) {
+            id(flash_led_color_hex).execute(color_hex);
+          } else {
+            id(set_led_green).execute(0);
+          }
           //TODO: Generate and send MQTT message here
           if (!payload.empty()) {
           }

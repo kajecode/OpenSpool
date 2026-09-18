@@ -108,6 +108,7 @@ packages:
   mqtt_bambu_lan: !include conf.d/mqtt_bambu_lan.yaml
   filament: !include conf.d/filament.yaml
   bambu_printer: !include conf.d/bambu_printer.yaml
+  bambu_ams: !include conf.d/bambu_ams.yaml
   pn532_rfid-solo: !include conf.d/pn532_rfid-solo.yaml
   automation: !include conf.d/automation.yaml
   led-external: !include conf.d/led-external.yaml

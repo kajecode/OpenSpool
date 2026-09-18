@@ -99,8 +99,15 @@ script:
               auto print = root["print"].to<JsonObject>();
               print["sequence_id"] = "0";
               print["command"] = "ams_filament_setting";
-              print["ams_id"] = 255; //TODO: support multiple AMS
-              print["tray_id"] = 254; //TODO: support multiple trays
+              // AMS Number 0 means "External Spool" (255/254 sentinel);
+              // 1-4 selects that AMS unit's Slot Number (1-4) instead.
+              if (id(ams_number).state > 0) {
+                print["ams_id"] = uint16_t(id(ams_number).state) - 1;
+                print["tray_id"] = uint16_t(id(slot_number).state) - 1;
+              } else {
+                print["ams_id"] = 255;
+                print["tray_id"] = 254;
+              }
               if (id(filament_include_alpha).state == true){
                 print["tray_color"] = id(filament_color_hexaa).state;
               }

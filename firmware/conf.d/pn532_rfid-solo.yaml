@@ -69,8 +69,17 @@ pn532_spi:
         id(last_tag_uid) = current_uid;
         id(last_tag_millis) = now;
 
+        // 255/254 = external spool sentinel. AMS Number 0 means "External
+        // Spool"; 1-4 selects that AMS unit's Slot Number (1-4) instead.
+        uint16_t ams_id = 255;
+        uint16_t tray_id = 254;
+        if (id(ams_number).state > 0) {
+          ams_id = uint16_t(id(ams_number).state) - 1;
+          tray_id = uint16_t(id(slot_number).state) - 1;
+        }
+
         id(bambu_mqtt_payload) = "";
-        auto tag_result = rfid::process_tag(tag, 255, 254);
+        auto tag_result = rfid::process_tag(tag, ams_id, tray_id);
         if (!tag_result.display_payload.empty()) {
           id(filament_raw_data0).publish_state(tag_result.display_payload);
         }
